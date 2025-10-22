@@ -15,6 +15,7 @@ ctk.set_default_color_theme("blue")
 app = ctk.CTk()
 app.title("Ứng Dụng Chat Đa Người Dùng")
 app.geometry("500x500")
+app.minsize(420, 320)
 
 # --- Khung Hiển Thị Người Dùng ---
 users_frame = ctk.CTkFrame(app, width=140)
@@ -22,15 +23,21 @@ users_frame.pack(side="right", fill="y", padx=5, pady=5)
 users_label = ctk.CTkLabel(users_frame, text="Người Dùng Trực Tuyến:")
 users_label.pack(pady=5)
 user_list = ctk.CTkTextbox(users_frame, width=140, height=350, state="disabled")
-user_list.pack(padx=5, pady=5)
+user_list.pack(padx=5, pady=5, fill="y", expand=True)
 
 # --- Khung Chat ---
 chat_box = ctk.CTkTextbox(app, width=320, height=350, state="disabled")
-chat_box.pack(pady=10, side="top", fill="x", padx=10) # Điều chỉnh layout để nằm trên
+chat_box.pack(pady=10, side="top", fill="both", expand=True, padx=10) # Điều chỉnh layout để nằm trên và mở rộng
 
-# --- Khung Nhập Liệu ---
-entry = ctk.CTkEntry(app, width=300, placeholder_text="Nhập tin nhắn (Riêng tư: @tên ...)")
-entry.pack(side="left", padx=10, pady=5)
+# --- Khung Nhập Liệu: đặt entry và nút Gửi vào một frame để không bị chen chúc ---
+input_frame = ctk.CTkFrame(app)
+input_frame.pack(side="bottom", fill="x", padx=10, pady=5)
+
+entry = ctk.CTkEntry(input_frame, placeholder_text="Nhập tin nhắn (Riêng tư: @tên ...)")
+entry.pack(side="left", fill="x", expand=True, padx=(0,8))
+
+send_btn = ctk.CTkButton(input_frame, text="Gửi", command=lambda e=None: send_message())
+send_btn.pack(side="right")
 
 # --- Các Hàm Xử Lý GUI và Mạng ---
 
@@ -183,11 +190,6 @@ def connect_to_server():
     receive_thread = threading.Thread(target=receive_messages)
     receive_thread.daemon = True
     receive_thread.start()
-
-# --- Giao Diện (Tie-up) ---
-
-send_btn = ctk.CTkButton(app, text="Gửi", command=send_message)
-send_btn.pack(side="right", padx=10, pady=5)
 
 # Cho phép nhấn Enter để gửi tin nhắn
 entry.bind("<Return>", send_message)
